@@ -70,9 +70,26 @@
   }
 
   // API Key helpers（调用后端API）
-  async function generateApiKey(name = '默认API Key', description = ''){
+  async function generateApiKey(name = '默认API Key', description = '', username = ''){
     const token = localStorage.getItem('sce_token');
     if(!token) throw new Error('需要先登录');
+    
+    // 如果没有提供用户名，尝试从登录信息中获取
+    if(!username) {
+      const userRaw = localStorage.getItem('sce_user');
+      if(userRaw) {
+        try {
+          const user = JSON.parse(userRaw);
+          username = user.username || user.userName || user.name || '';
+        } catch(e) {
+          console.error('解析用户信息失败:', e);
+        }
+      }
+    }
+    
+    if(!username) {
+      throw new Error('无法获取用户名，请重新登录');
+    }
     
     try {
       const response = await fetch('https://api.oraclestar.cn/api/keys', {
@@ -81,7 +98,7 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ name, description })
+        body: JSON.stringify({ name, description, username })
       });
       
       if(!response.ok) {
@@ -94,6 +111,7 @@
       localStorage.setItem('sce_api_key', data.api_key);
       localStorage.setItem('sce_api_key_name', data.name);
       localStorage.setItem('sce_api_key_description', data.description || '');
+      localStorage.setItem('sce_api_key_username', data.username);
       localStorage.setItem('sce_api_key_created', String(now));
       return data.api_key;
     } catch(err) {
@@ -128,10 +146,31 @@
     }
   }
   
+  // 检查用户是否已有API Key
+  async function checkUserApiKey(username){
+    try {
+      const response = await fetch(`https://api.oraclestar.cn/api/keys/check?username=${encodeURIComponent(username)}`, {
+        method: 'GET'
+      });
+      
+      if(!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || '检查用户API Key失败');
+      }
+      
+      const data = await response.json();
+      return data.exists;
+    } catch(err) {
+      console.error('检查用户API Key失败:', err);
+      throw err;
+    }
+  }
+  
   function revokeApiKey(){
     localStorage.removeItem('sce_api_key');
     localStorage.removeItem('sce_api_key_name');
     localStorage.removeItem('sce_api_key_description');
+    localStorage.removeItem('sce_api_key_username');
     localStorage.removeItem('sce_api_key_created');
   }
   
@@ -139,8 +178,9 @@
     const key = localStorage.getItem('sce_api_key');
     const name = localStorage.getItem('sce_api_key_name');
     const description = localStorage.getItem('sce_api_key_description');
+    const username = localStorage.getItem('sce_api_key_username');
     const created = localStorage.getItem('sce_api_key_created');
-    return { key, name, description, created: created ? new Date(Number(created)) : null };
+    return { key, name, description, username, created: created ? new Date(Number(created)) : null };
   }
 
   // 动画帮助：显示用户卡片动画
@@ -556,9 +596,14 @@
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">API Key:</div>
           <div style="font-family: 'Courier New', monospace; font-size: 0.8rem; word-break: break-all; color: var(--primary-light);">${info.key.substring(0, 20)}...</div>
           <div style="margin-top: 0.25rem; font-size: 0.7rem; color: var(--text-secondary);">
-            ${info.name ? `名称: ${info.name}` : ''}
-            ${info.description ? ` | ${info.description}` : ''}
+            ${info.username ? `用户名: ${info.username}` : ''}
+            ${info.name ? ` | 名称: ${info.name}` : ''}
           </div>
+          ${info.description ? `
+            <div style="margin-top: 0.25rem; font-size: 0.7rem; color: var(--text-secondary);">
+              描述: ${info.description}
+            </div>
+          ` : ''}
           <div style="margin-top: 0.25rem; font-size: 0.7rem; color: var(--text-secondary);">
             ${info.created ? info.created.toLocaleDateString() : '—'}
           </div>
@@ -586,7 +631,8 @@
           
           try {
             const result = await verifyApiKey();
-            alert('API Key验证成功！\n名称: ' + result.key_info.name + 
+            alert('API Key验证成功！\n用户名: ' + result.key_info.username + 
+                  '\n名称: ' + result.key_info.name + 
                   (result.key_info.description ? '\n描述: ' + result.key_info.description : '') +
                   '\n创建时间: ' + new Date(result.key_info.created_at).toLocaleString());
           } catch(err) {
@@ -621,6 +667,35 @@
         }
       }, 100);
     } else {
+      // 检查用户是否已有API Key
+      const userRaw = localStorage.getItem('sce_user');
+      let username = '';
+      if(userRaw) {
+        try {
+          const user = JSON.parse(userRaw);
+          username = user.username || user.userName || user.name || '';
+        } catch(e) {
+          console.error('解析用户信息失败:', e);
+        }
+      }
+      
+      if(username) {
+        // 异步检查用户是否已有API Key
+        checkUserApiKey(username).then(hasKey => {
+          if(hasKey) {
+            apiKeyBox.innerHTML = `
+              <div style="text-align: center;">
+                <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔑</div>
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">检测到您已有API Key</p>
+                <p style="color: var(--accent); font-size: 0.75rem; margin-top: 0.5rem;">点击"生成"按钮可重新生成</p>
+              </div>
+            `;
+          }
+        }).catch(err => {
+          console.warn('检查用户API Key失败:', err);
+        });
+      }
+      
       apiKeyBox.innerHTML = `
         <div style="text-align: center;">
           <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔑</div>
@@ -643,8 +718,37 @@
       genKeyBtn.disabled = true;
       genKeyBtn.innerHTML = '<span class="spinner"></span> 生成中...';
       
+      // 获取用户名
+      const userRaw = localStorage.getItem('sce_user');
+      let username = '';
+      if(userRaw) {
+        try {
+          const user = JSON.parse(userRaw);
+          username = user.username || user.userName || user.name || '';
+        } catch(e) {
+          console.error('解析用户信息失败:', e);
+        }
+      }
+      
+      // 检查用户是否已有API Key
+      if(username) {
+        try {
+          const hasKey = await checkUserApiKey(username);
+          if(hasKey) {
+            if(!confirm('检测到您已有API Key，是否要重新生成？重新生成将使旧密钥失效。')) {
+              genKeyBtn.disabled = false;
+              genKeyBtn.innerHTML = '<span>✨</span> 生成';
+              return;
+            }
+          }
+        } catch(err) {
+          console.warn('检查用户API Key失败:', err);
+          // 即使检查失败也继续生成
+        }
+      }
+      
       // 调用后端API生成API Key
-      const key = await generateApiKey('默认API Key', '通过Web界面生成');
+      const key = await generateApiKey('默认API Key', '通过Web界面生成', username);
       
       // 使用动画展示生成的密钥
       await revealApiKeyAnim(key);

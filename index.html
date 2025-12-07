@@ -145,7 +145,7 @@ const response = await fetch('https://api.oraclestar.cn/api/umasce', {
 const data = await response.json();
 console.log(data);
 
-// 创建 API Key
+// 创建 API Key (新版本，需要用户名)
 const createResponse = await fetch('https://api.oraclestar.cn/api/keys', {
   method: 'POST',
   headers: {
@@ -154,11 +154,17 @@ const createResponse = await fetch('https://api.oraclestar.cn/api/keys', {
   },
   body: JSON.stringify({
     name: '我的API Key',
-    description: '用于项目开发'
+    description: '用于项目开发',
+    username: 'your_username'  // 必填参数
   })
 });
 const keyData = await createResponse.json();
-console.log('API Key:', keyData.api_key);</pre>
+console.log('API Key:', keyData.api_key);
+
+// 检查用户是否已有API Key
+const checkResponse = await fetch('https://api.oraclestar.cn/api/keys/check?username=your_username');
+const checkData = await checkResponse.json();
+console.log('用户已有API Key:', checkData.exists);</pre>
           </div>
 
           <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
