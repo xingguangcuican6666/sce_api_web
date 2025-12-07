@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SCE API - 赛马娘支援卡数据接口</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- 背景动画 -->
+  <div class="bg-animation"></div>
+
+  <!-- 导航栏 -->
+  <nav class="anim-fade">
+    <div class="nav-container">
+      <div class="logo">SCE API</div>
+      <div class="nav-buttons">
+        <button id="loginBtn" class="btn btn-primary anim-delay-1">统一登录</button>
+        <button id="logoutBtn" class="btn btn-secondary anim-delay-2" style="display:none">登出</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 主要内容 -->
+  <div class="main-content">
+    <!-- Hero 区域 -->
+    <section class="hero">
+      <div class="hero-content anim-slide-up">
+        <h1 class="gradient-text">赛马娘支援卡数据 API</h1>
+        <p>高性能、稳定可靠的赛马娘支援卡数据接口，为开发者提供完整的支援卡信息查询服务</p>
+        <div class="hero-buttons">
+          <button id="heroDemoBtn" class="btn btn-primary anim-delay-1">
+            <span>🚀</span> 立即体验
+          </button>
+          <button id="heroDocBtn" class="btn btn-secondary anim-delay-2">
+            <span>📖</span> 查看文档
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 功能展示区域 -->
+    <section class="features">
+      <div class="grid">
+        <!-- API 演示卡片 -->
+        <div class="card anim-scale anim-delay-1">
+          <div class="card-header">
+            <h3>🔥 API 快速体验</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">
+              实时调用 SCE API，获取支援卡数据
+            </p>
+          </div>
+          <div class="card-content">
+            <div>
+              <div class="input-group">
+                <label>认证方式</label>
+                <div class="checkbox-group">
+                  <label>
+                    <input type="checkbox" id="useApiKey" />
+                    <span>使用 API Key</span>
+                  </label>
+                  <label>
+                    <input type="checkbox" id="useBearer" checked />
+                    <span>使用 Bearer Token</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="input-group">
+                <label>支援卡 ID（可选）</label>
+                <input type="text" id="cardId" placeholder="例如：a1, a2, a3..." />
+              </div>
+            </div>
+            <div>
+              <button id="callApiBtn" class="btn btn-primary" style="width: 100%;">
+                <span>⚡</span> 调用 API
+              </button>
+            </div>
+          </div>
+
+          <div id="apiResult" style="display: none; margin-top: 1.5rem;"></div>
+        </div>
+
+        <!-- 用户中心卡片 -->
+        <div class="card anim-scale anim-delay-2">
+          <div class="card-header">
+            <h3>👤 用户中心</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 0;">
+              管理您的账户和 API 访问密钥
+            </p>
+          </div>
+          <div class="card-content">
+            <div id="userBox" style="text-align: center; padding: 1rem 0;">
+              <div style="font-size: 3rem; margin-bottom: 1rem;">🔒</div>
+              <p style="color: var(--text-secondary);">未登录</p>
+              <button id="userLoginBtn" class="btn btn-primary" style="margin-top: 1rem;">
+                立即登录
+              </button>
+            </div>
+            <div style="border-left: 1px solid rgba(255, 255, 255, 0.1); padding-left: 2rem;">
+              <h4 style="color: var(--primary-light); margin-bottom: 1rem; font-size: 1.1rem;">
+                🔐 API Key 管理
+              </h4>
+              <div id="apiKeyBox" style="min-height: 60px; display: flex; align-items: center; justify-content: center;">
+                <div style="text-align: center;">
+                  <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔑</div>
+                  <p style="color: var(--text-secondary); font-size: 0.85rem;">请先登录</p>
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+                <button id="genKeyBtn" class="btn btn-primary" style="flex: 1; font-size: 0.9rem; padding: 0.75rem 1rem;">
+                  <span>✨</span> 生成
+                </button>
+                <button id="revokeKeyBtn" class="btn btn-secondary" style="flex: 1; font-size: 0.9rem; padding: 0.75rem 1rem; display: none;">
+                  <span>🗑️</span> 撤销
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 示例代码卡片 -->
+        <div class="card anim-scale anim-delay-4">
+          <h3>💻 示例代码</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+            快速集成的代码示例
+          </p>
+          
+          <div class="code-block">
+<pre style="color: var(--text-secondary);">// 使用 JavaScript 调用 API (Bearer Token 方式)
+const response = await fetch('https://api.oraclestar.cn/api/umasce', {
+  headers: {
+    'Authorization': 'Bearer ' + token
+  }
+});
+const data = await response.json();
+console.log(data);
+
+// 使用 JavaScript 调用 API (API Key 方式)
+const response = await fetch('https://api.oraclestar.cn/api/umasce', {
+  headers: {
+    'x-api-key': 'ske_your_api_key_here'
+  }
+});
+const data = await response.json();
+console.log(data);
+
+// 创建 API Key
+const createResponse = await fetch('https://api.oraclestar.cn/api/keys', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer ' + token
+  },
+  body: JSON.stringify({
+    name: '我的API Key',
+    description: '用于项目开发'
+  })
+});
+const keyData = await createResponse.json();
+console.log('API Key:', keyData.api_key);</pre>
+          </div>
+
+          <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <span class="status-indicator">
+              <span class="spinner" style="width: 12px; height: 12px;"></span>
+              实时可用
+            </span>
+            <span class="status-indicator" style="background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.3); color: #22c55e;">
+              ✓ 高性能
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-info">
+        <p class="copyright">© 2025 OracleLoadStar. All rights reserved.</p>
+        <p class="icp"><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">粤ICP备2025482222号-1</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
