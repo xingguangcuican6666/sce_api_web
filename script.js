@@ -77,10 +77,13 @@
     // 如果没有提供用户名，尝试从登录信息中获取
     if(!username) {
       const userRaw = localStorage.getItem('sce_user');
+      console.log('用户原始数据:', userRaw); // 调试日志
       if(userRaw) {
         try {
           const user = JSON.parse(userRaw);
+          console.log('解析后的用户数据:', user); // 调试日志
           username = user.username || user.userName || user.name || '';
+          console.log('获取到的用户名:', username); // 调试日志
         } catch(e) {
           console.error('解析用户信息失败:', e);
         }
@@ -91,6 +94,9 @@
       throw new Error('无法获取用户名，请重新登录');
     }
     
+    const requestBody = { name, description, username };
+    console.log('发送的请求体:', requestBody); // 调试日志
+    
     try {
       const response = await fetch('https://api.oraclestar.cn/api/keys', {
         method: 'POST',
@@ -98,7 +104,7 @@
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ name, description, username })
+        body: JSON.stringify(requestBody)
       });
       
       if(!response.ok) {
