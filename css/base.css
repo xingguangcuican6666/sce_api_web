@@ -102,7 +102,7 @@ nav {
 .logo {
   font-size: 1.5rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #f43f5e 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #eeaeee 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -115,11 +115,11 @@ nav {
 @keyframes logoShift {
   0%, 100% {
     background-position: 0% 50%;
-    filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.3));
+    filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.3));
   }
   50% {
     background-position: 100% 50%;
-    filter: drop-shadow(0 0 15px rgba(244, 63, 94, 0.4));
+    filter: drop-shadow(0 0 15px rgba(238, 174, 238, 0.4));
   }
 }
 
@@ -169,7 +169,7 @@ nav {
   font-size: clamp(2.5rem, 5vw, 4rem);
   font-weight: 800;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 30%, #f43f5e 60%, #ec4899 100%);
+  background: linear-gradient(135deg, #ff6b6b 0%, #eeaeee 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -180,11 +180,11 @@ nav {
 
 @keyframes heroGlow {
   0%, 100% { 
-    filter: brightness(1) drop-shadow(0 0 20px rgba(99, 102, 241, 0.3));
+    filter: brightness(1) drop-shadow(0 0 20px rgba(255, 107, 107, 0.3));
     background-position: 0% 50%;
   }
   50% { 
-    filter: brightness(1.3) drop-shadow(0 0 30px rgba(168, 85, 247, 0.4));
+    filter: brightness(1.3) drop-shadow(0 0 30px rgba(238, 174, 238, 0.4));
     background-position: 100% 50%;
   }
 }
