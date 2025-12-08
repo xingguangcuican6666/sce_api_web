@@ -197,6 +197,38 @@ nav {
   margin-right: auto;
 }
 
+/* 打字光标效果 */
+.typing-cursor {
+  display: inline-block;
+  width: 4px;
+  height: 1.1em;
+  background: #ffffff;
+  margin-left: 2px;
+  animation: cursorBlink 1s infinite, cursorGlow 2s ease-in-out infinite;
+  vertical-align: text-bottom;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes cursorBlink {
+  0% { opacity: 0; }
+  20% { opacity: 1; }
+  50% { opacity: 1; }
+  70% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+@keyframes cursorGlow {
+  0%, 100% { 
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    transform: scaleY(1);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+    transform: scaleY(1.1);
+  }
+}
+
 /* 卡片样式 */
 .card {
   background: rgba(20, 20, 20, 0.9);
@@ -358,6 +390,37 @@ nav {
   border-color: var(--primary);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
   background: rgba(30, 30, 30, 0.9);
+}
+
+/* 自定义API Key输入框特殊样式 */
+#customApiKeyGroup {
+  background: rgba(37, 99, 235, 0.05);
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+#customApiKeyGroup label {
+  color: var(--primary-light);
+  font-weight: 600;
+}
+
+#customApiKey {
+  font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 复选框样式 */

@@ -16,6 +16,8 @@
   const useApiKey = document.getElementById('useApiKey');
   const useBearer = document.getElementById('useBearer');
   const cardIdInput = document.getElementById('cardId');
+  const customApiKeyInput = document.getElementById('customApiKey');
+  const customApiKeyGroup = document.getElementById('customApiKeyGroup');
   const heroDemoBtn = document.getElementById('heroDemoBtn');
   const heroDocBtn = document.getElementById('heroDocBtn');
 
@@ -168,6 +170,31 @@
       return data.exists;
     } catch(err) {
       console.error('检查用户API Key失败:', err);
+      throw err;
+    }
+  }
+  
+  // 删除用户的所有API Key
+  async function deleteUserApiKeys(username, token){
+    try {
+      const response = await fetch('https://api.oraclestar.cn/api/keys', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ username })
+      });
+      
+      if(!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || '删除API Key失败');
+      }
+      
+      const data = await response.json();
+      return data;
+    } catch(err) {
+      console.error('删除API Key失败:', err);
       throw err;
     }
   }
@@ -366,6 +393,21 @@
             return current;
           };
           
+          // 辅助函数：获取等级属性值，如果不存在则返回0
+          const getLevelValue = (obj, basePath, level) => {
+            const path = `${basePath}.Lv${level}`;
+            const value = safeGet(obj, path, 0);
+            return value === '—' ? 0 : value;
+          };
+          
+          // 辅助函数：获取多个等级的属性值
+          const getLevelValues = (obj, basePath, levels = [1, 20, 30, 40, 45, 50]) => {
+            return levels.map(level => ({
+              level,
+              value: getLevelValue(obj, basePath, level)
+            }));
+          };
+          
           parsedHtml = `
             <div class="api-parsed-result">
               <h4>📋 支援卡信息</h4>
@@ -384,45 +426,46 @@
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始羁绊</div>
-                  <div class="api-data-value">Lv1: ${safeGet(cardData, 'initalFriendship.Lv1', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalFriendship', 1)} | Lv20: ${getLevelValue(cardData, 'initalFriendship', 20)} | Lv30: ${getLevelValue(cardData, 'initalFriendship', 30)} | Lv40: ${getLevelValue(cardData, 'initalFriendship', 40)} | Lv45: ${getLevelValue(cardData, 'initalFriendship', 45)} | Lv50: ${getLevelValue(cardData, 'initalFriendship', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始速度</div>
-                  <div class="api-data-value">${safeGet(cardData, 'initalSpeed', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalSpeed', 1)} | Lv20: ${getLevelValue(cardData, 'initalSpeed', 20)} | Lv30: ${getLevelValue(cardData, 'initalSpeed', 30)} | Lv40: ${getLevelValue(cardData, 'initalSpeed', 40)} | Lv45: ${getLevelValue(cardData, 'initalSpeed', 45)} | Lv50: ${getLevelValue(cardData, 'initalSpeed', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始耐力</div>
-                  <div class="api-data-value">${safeGet(cardData, 'initalStamina', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalStamina', 1)} | Lv20: ${getLevelValue(cardData, 'initalStamina', 20)} | Lv30: ${getLevelValue(cardData, 'initalStamina', 30)} | Lv40: ${getLevelValue(cardData, 'initalStamina', 40)} | Lv45: ${getLevelValue(cardData, 'initalStamina', 45)} | Lv50: ${getLevelValue(cardData, 'initalStamina', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始力量</div>
-                  <div class="api-data-value">${safeGet(cardData, 'initalPower', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalPower', 1)} | Lv20: ${getLevelValue(cardData, 'initalPower', 20)} | Lv30: ${getLevelValue(cardData, 'initalPower', 30)} | Lv40: ${getLevelValue(cardData, 'initalPower', 40)} | Lv45: ${getLevelValue(cardData, 'initalPower', 45)} | Lv50: ${getLevelValue(cardData, 'initalPower', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始根性</div>
-                  <div class="api-data-value">${safeGet(cardData, 'initalGuts', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalGuts', 1)} | Lv20: ${getLevelValue(cardData, 'initalGuts', 20)} | Lv30: ${getLevelValue(cardData, 'initalGuts', 30)} | Lv40: ${getLevelValue(cardData, 'initalGuts', 40)} | Lv45: ${getLevelValue(cardData, 'initalGuts', 45)} | Lv50: ${getLevelValue(cardData, 'initalGuts', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">初始智力</div>
-                  <div class="api-data-value">${safeGet(cardData, 'initalWit', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'initalWit', 1)} | Lv20: ${getLevelValue(cardData, 'initalWit', 20)} | Lv30: ${getLevelValue(cardData, 'initalWit', 30)} | Lv40: ${getLevelValue(cardData, 'initalWit', 40)} | Lv45: ${getLevelValue(cardData, 'initalWit', 45)} | Lv50: ${getLevelValue(cardData, 'initalWit', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">友情加成</div>
-                  <div class="api-data-value">Lv1: ${safeGet(cardData, 'friendshipBonus.Lv1', 0)} | Lv25: ${safeGet(cardData, 'friendshipBonus.Lv25', 0)} | Lv45: ${safeGet(cardData, 'friendshipBonus.Lv45', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'friendshipBonus', 1)} | Lv20: ${getLevelValue(cardData, 'friendshipBonus', 20)} | Lv30: ${getLevelValue(cardData, 'friendshipBonus', 30)} | Lv40: ${getLevelValue(cardData, 'friendshipBonus', 40)} | Lv45: ${getLevelValue(cardData, 'friendshipBonus', 45)} | Lv50: ${getLevelValue(cardData, 'friendshipBonus', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">干劲加成</div>
-                  <div class="api-data-value">Lv1: ${safeGet(cardData, 'moodEffect.Lv1', 0)} | Lv25: ${safeGet(cardData, 'moodEffect.Lv25', 0)} | Lv45: ${safeGet(cardData, 'moodEffect.Lv45', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'moodEffect', 1)} | Lv20: ${getLevelValue(cardData, 'moodEffect', 20)} | Lv30: ${getLevelValue(cardData, 'moodEffect', 30)} | Lv40: ${getLevelValue(cardData, 'moodEffect', 40)} | Lv45: ${getLevelValue(cardData, 'moodEffect', 45)} | Lv50: ${getLevelValue(cardData, 'moodEffect', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">训练加成</div>
-                  <div class="api-data-value">Lv1: ${safeGet(cardData, 'traningEffect.Lv1', 0)} | Lv25: ${safeGet(cardData, 'traningEffect.Lv25', 0)} | Lv45: ${safeGet(cardData, 'traningEffect.Lv45', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'traningEffect', 1)} | Lv20: ${getLevelValue(cardData, 'traningEffect', 20)} | Lv30: ${getLevelValue(cardData, 'traningEffect', 30)} | Lv40: ${getLevelValue(cardData, 'traningEffect', 40)} | Lv45: ${getLevelValue(cardData, 'traningEffect', 45)} | Lv50: ${getLevelValue(cardData, 'traningEffect', 50)}</div>
                 </div>
                 <div class="api-data-item">
                   <div class="api-data-label">得意率</div>
-                  <div class="api-data-value">Lv1: ${safeGet(cardData, 'specialtyPriority.Lv1', 0)} | Lv25: ${safeGet(cardData, 'specialtyPriority.Lv25', 0)} | Lv45: ${safeGet(cardData, 'specialtyPriority.Lv45', 0)}</div>
+                  <div class="api-data-value">Lv1: ${getLevelValue(cardData, 'specialtyPriority', 1)} | Lv20: ${getLevelValue(cardData, 'specialtyPriority', 20)} | Lv30: ${getLevelValue(cardData, 'specialtyPriority', 30)} | Lv40: ${getLevelValue(cardData, 'specialtyPriority', 40)} | Lv45: ${getLevelValue(cardData, 'specialtyPriority', 45)} | Lv50: ${getLevelValue(cardData, 'specialtyPriority', 50)}</div>
                 </div>
               </div>
+              <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">显示部分属性，全部属性请参考文档</div>
             `;
         } else if (isListResponse) {
           // 支援卡列表展示
@@ -693,7 +736,7 @@
               <div style="text-align: center;">
                 <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">🔑</div>
                 <p style="color: var(--text-secondary); font-size: 0.85rem;">检测到您已有API Key</p>
-                <p style="color: var(--accent); font-size: 0.75rem; margin-top: 0.5rem;">点击"生成"按钮可重新生成</p>
+                <p style="color: var(--accent); font-size: 0.75rem; margin-top: 0.5rem;">点击"重新生成"将删除旧密钥并创建新密钥</p>
               </div>
             `;
           }
@@ -741,10 +784,19 @@
         try {
           const hasKey = await checkUserApiKey(username);
           if(hasKey) {
-            if(!confirm('检测到您已有API Key，是否要重新生成？重新生成将使旧密钥失效。')) {
+            if(!confirm('检测到您已有API Key，是否要重新生成？重新生成将删除旧密钥并创建新密钥。')) {
               genKeyBtn.disabled = false;
               genKeyBtn.innerHTML = '<span>✨</span> 生成';
               return;
+            }
+            
+            // 先删除旧的API Key
+            genKeyBtn.innerHTML = '<span class="spinner"></span> 删除旧密钥...';
+            try {
+              const deleteResult = await deleteUserApiKeys(username, token);
+              console.log('删除API Key结果:', deleteResult);
+            } catch(deleteErr) {
+              throw new Error('删除旧API Key失败: ' + deleteErr.message);
             }
           }
         } catch(err) {
@@ -754,11 +806,13 @@
       }
       
       // 调用后端API生成API Key
+      genKeyBtn.innerHTML = '<span class="spinner"></span> 生成新密钥...';
       const key = await generateApiKey('默认API Key', '通过Web界面生成', username);
       
       // 使用动画展示生成的密钥
       await revealApiKeyAnim(key);
       updateApiKeyUI();
+      checkAndShowCustomApiKeyInput();
     } catch(err) {
       alert('生成API Key失败: ' + err.message);
     } finally {
@@ -802,6 +856,7 @@
       // 登录后启用 API Key 管理并显示
       genKeyBtn.disabled = false;
       updateApiKeyUI();
+      checkAndShowCustomApiKeyInput();
     } else {
       // 未登录状态
       userBox.innerHTML = `
@@ -832,6 +887,21 @@
       revokeKeyBtn.style.display = 'none';
       genKeyBtn.disabled = true;
       genKeyBtn.innerHTML = '<span>✨</span> 生成';
+      checkAndShowCustomApiKeyInput();
+    }
+  }
+
+  // 检查是否需要显示自定义API Key输入框
+  function checkAndShowCustomApiKeyInput() {
+    const token = localStorage.getItem('sce_token');
+    const apiKey = localStorage.getItem('sce_api_key');
+    const userRaw = localStorage.getItem('sce_user');
+    
+    // 如果已登录但没有本地API Key，显示输入框
+    if(token && !apiKey && userRaw) {
+      customApiKeyGroup.style.display = 'block';
+    } else {
+      customApiKeyGroup.style.display = 'none';
     }
   }
 
@@ -845,15 +915,26 @@
     const headers = {};
     const apiKey = localStorage.getItem('sce_api_key');
     const token = localStorage.getItem('sce_token');
+    const customApiKey = (customApiKeyInput.value || '').trim();
 
     // 根据用户选择的认证方式设置请求头
-    if(useApiKey.checked && apiKey){
-      headers['x-api-key'] = apiKey;
+    if(useApiKey.checked) {
+      // 优先使用手动输入的API Key，然后是本地存储的API Key
+      if(customApiKey) {
+        headers['x-api-key'] = customApiKey;
+      } else if(apiKey) {
+        headers['x-api-key'] = apiKey;
+      } else {
+        apiResult.innerHTML = '<div style="color: #ef4444;">❌ 请输入API Key或生成新的API Key</div>';
+        return;
+      }
     } else if(useBearer.checked && token){
       headers['Authorization'] = 'Bearer ' + token;
     } else {
       // 如果没有选择认证方式或没有相应的凭证，尝试使用API Key
-      if(apiKey) {
+      if(customApiKey) {
+        headers['x-api-key'] = customApiKey;
+      } else if(apiKey) {
         headers['x-api-key'] = apiKey;
       } else if(token) {
         headers['Authorization'] = 'Bearer ' + token;
@@ -971,6 +1052,33 @@
     setInterval(createMeteorShower, 500 + Math.random() * 1000);
   }
 
+  // 打字效果
+  function typeWriter(element, text, speed = 100, onComplete = null, cursorElement = null) {
+    let i = 0;
+    element.textContent = '';
+    
+    // 显示光标
+    if (cursorElement) {
+      cursorElement.style.display = 'inline-block';
+    }
+    
+    function type() {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+        setTimeout(type, speed);
+      } else {
+        // 打字完成后保留光标闪烁，不隐藏
+        // 执行回调函数
+        if (onComplete) {
+          onComplete();
+        }
+      }
+    }
+    
+    return type;
+  }
+
   // 页面加载动画
   function initPageAnimations(){
     document.body.style.transition = 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
@@ -980,11 +1088,42 @@
     
     // 初始化流星动画
     initMeteorAnimation();
+    
+    // 初始化标题打字效果
+    const titleElement = document.getElementById('typing-title');
+    const subtitleElement = document.getElementById('typing-subtitle');
+    const cursor = document.getElementById('main-cursor');
+    
+    if (titleElement && cursor) {
+      // 主标题打字效果
+      const titleTypeFunction = typeWriter(titleElement, '赛马娘支援卡数据 API', 120, () => {
+        // 主标题完成后，将光标移动到副标题
+        if (subtitleElement) {
+          // 将光标从主标题移动到副标题
+          titleElement.parentElement.removeChild(cursor);
+          subtitleElement.parentElement.appendChild(cursor);
+          
+          // 开始副标题打字效果
+          const subtitleTypeFunction = typeWriter(
+            subtitleElement, 
+            '高性能、稳定可靠的赛马娘支援卡数据接口，为开发者提供完整的支援卡信息查询服务', 
+            50
+          );
+          subtitleTypeFunction();
+        }
+      }, cursor);
+      
+      // 延迟开始主标题打字效果
+      setTimeout(() => {
+        titleTypeFunction();
+      }, 500);
+    }
   }
 
   // 初始化
   handleCallbackParams();
   updateUI();
+  checkAndShowCustomApiKeyInput();
   initPageAnimations();
 
   // 在本地打开文件服务器时，可能 URL 为 /sce_api_intro.html 或 /docs/sce_api_intro.html，兼容链接位置

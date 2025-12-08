@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>SCE API - 赛马娘支援卡数据接口</title>
-  <!-- 加载提示模块 -->
-  <script src="js/loading.js"></script>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <!-- 背景动画 -->
@@ -27,13 +26,8 @@
     <!-- Hero 区域 -->
     <section class="hero">
       <div class="hero-content anim-slide-up">
-        <h1 class="gradient-text">
-  <span id="typing-title"></span>
-  <span class="typing-cursor" id="main-cursor">|</span>
-</h1>
-        <p>
-  <span id="typing-subtitle"></span>
-</p>
+        <h1 class="gradient-text">赛马娘支援卡数据 API</h1>
+        <p>高性能、稳定可靠的赛马娘支援卡数据接口，为开发者提供完整的支援卡信息查询服务</p>
         <div class="hero-buttons">
           <button id="heroDemoBtn" class="btn btn-primary anim-delay-1">
             <span>🚀</span> 立即体验
@@ -177,27 +171,6 @@ console.log('用户已有API Key:', checkData.exists);</pre>
     </div>
   </footer>
 
-  <script>
-    // 动态加载CSS和JS文件，显示加载提示
-    window.addEventListener('DOMContentLoaded', function() {
-      // 加载CSS文件
-      loadCSS('css/base.css', function() {
-        loadCSS('css/components.css', function() {
-          // CSS加载完成后，开始加载JS文件
-          loadScript('js/auth.js', function() {
-            loadScript('js/api.js', function() {
-              loadScript('js/typing-effect.js', function() {
-                loadScript('js/ui.js', function() {
-                  loadScript('js/app.js', function() {
-                    loadScript('js/main.js');
-                  });
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  </script>
+  <script src="script.js?v=0.0.3"></script>
 </body>
 </html>
